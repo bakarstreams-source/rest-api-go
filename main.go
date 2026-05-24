@@ -5,6 +5,8 @@ import (
 	"rest-api/db"
 	"rest-api/handlers"
 	"log"
+    "rest-api/middleware"
+
 )
 func main () {
 	  // DB pehle connect karo
@@ -16,27 +18,28 @@ func main () {
 
 	// Mux create karo
 	mux := http.NewServeMux()
-	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+    
+// Routes pe middleware lagao
+mux.HandleFunc("/login", handlers.Login) 
+mux.HandleFunc("/users", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
         handlers.CreateUser(w, r)
-    }else if r.Method == http.MethodDelete {
-		handlers.DeleteAllUsers(w, r)
-	} else {
+    } else if r.Method == http.MethodDelete {
+        handlers.DeleteAllUsers(w, r)
+    } else {
         handlers.GetAllUsers(w, r)
     }
+}))
 
-})
-
-mux.HandleFunc("/users/", func(w http.ResponseWriter, r *http.Request) {
+mux.HandleFunc("/users/", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodDelete {
         handlers.DeleteUserByID(w, r)
     } else if r.Method == http.MethodPut {
         handlers.UpdateUserByID(w, r)
-    } else if r.Method == http.MethodGet {
+    } else {
         handlers.GetUserByName(w, r)
     }
-})
-
+}))
 
 	// Server start karo
 	if err := http.ListenAndServe(":8080", mux); err != nil {

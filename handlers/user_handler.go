@@ -9,7 +9,7 @@ import (
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.DB.Query("SELECT * FROM users")
+	rows, err := db.DB.Query("SELECT id, name, email FROM users")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -36,7 +36,7 @@ func GetUserByName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	name := r.URL.Path[len("/users/"):]
-	row := db.DB.QueryRow("SELECT * FROM users WHERE name = $1", name)
+	row := db.DB.QueryRow("SELECT id, name, email FROM users WHERE name = $1", name)
 	var user models.User
 	if err := row.Scan(&user.ID, &user.Name, &user.Email); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

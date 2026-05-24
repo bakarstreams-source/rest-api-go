@@ -21,6 +21,7 @@ func main () {
     
 // Routes pe middleware lagao
 mux.HandleFunc("/login", handlers.Login) 
+mux.HandleFunc("/register", handlers.Register)
 mux.HandleFunc("/users", middleware.AuthMiddleware(func(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodPost {
         handlers.CreateUser(w, r)

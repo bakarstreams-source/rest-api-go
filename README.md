@@ -3,30 +3,36 @@
 A RESTful API built with Go, PostgreSQL and JWT Authentication.
 
 ## Features
-- Get all users
-- Get user by ID
-- Create users
-- Update user
-- Delete user
-- JWT Authentication
+- User Registration with password hashing (bcrypt)
+- User Login with JWT Authentication
+- Protected routes with middleware
+- Full CRUD operations on users
 
 ## Tech Stack
 - Go
 - PostgreSQL
-- JWT
+- JWT (golang-jwt)
+- bcrypt
 - net/http
 
 ## API Endpoints
-- POST /login - Login and get token
-- GET /users - Get all users (protected)
-- GET /users/id - Get user by ID (protected)
-- POST /users - Create users (protected)
-- PUT /users/id - Update user (protected)
-- DELETE /users/id - Delete user (protected)
+
+### Auth (Public)
+- POST /register - Register new user
+- POST /login - Login and get JWT token
+
+### Users (Protected - JWT required)
+- GET /users - Get all users
+- GET /users/name - Get user by name
+- POST /users - Create users
+- PUT /users/id - Update user
+- DELETE /users/id - Delete user
+- DELETE /users - Delete all users
 
 ## Setup
 1. Clone the repo
-2. Create .env file:
+2. Install PostgreSQL
+3. Create .env file:
 DB_USER=your_username
 DB_PASSWORD=your_password
 DB_HOST=localhost
@@ -34,5 +40,18 @@ DB_PORT=5432
 DB_NAME=restapi
 JWT_SECRET=your_secret_key
 
-3. Run:
+4. Create database and table:
+CREATE DATABASE restapi;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    password VARCHAR(255)
+);
+
+5. Run:
 go run main.go
+
+## Authentication
+All /users routes require JWT token in header:
+Authorization: Bearer your_token
